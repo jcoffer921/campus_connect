@@ -3,7 +3,7 @@
 
 import customtkinter as ctk
 import tkinter.messagebox as tkmb
-from campusconnect.graph_structure import Graph
+from graph_structure import Graph
 
 
 class CampusConnectApp:
@@ -83,11 +83,76 @@ class CampusConnectApp:
         login_button.pack(pady=20)
 
     def setup_main_interface(self):
-        navbar = ctk.CTkFrame(self.root, height=50)
+        # Navbar setup
+        navbar = ctk.CTkFrame(self.root, height=80)
         navbar.pack(side="top", fill="x")
 
         home_btn = ctk.CTkButton(navbar, text="Home", command=lambda: self.show_page("home"))
         home_btn.pack(side="left", padx=10)
+
+        add_btn = ctk.CTkButton(navbar, text="Add Student", command=lambda: self.show_page("add_student"))
+        add_btn.pack(side="left", padx=10)
+
+        connections_btn = ctk.CTkButton(navbar, text="Connections", command=lambda: self.show_page("connections"))
+        connections_btn.pack(side="left", padx=10)
+
+        graph_btn = ctk.CTkButton(navbar, text="Graph", command=lambda: self.show_page("graph"))
+        graph_btn.pack(side="left", padx=10)
+
+        discussions_btn = ctk.CTkButton(navbar, text="Discussions", command=lambda: self.show_page("discussions"))
+        discussions_btn.pack(side="left", padx=10)
+
+        container = ctk.CTkFrame(self.root)
+        container.pack(fill="both", expand=True)
+
+        # Home Page - Frames
+        home_page = ctk.CTkFrame(container)
+        home_page.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        title = ctk.CTkLabel(
+            home_page,
+            text = "Home Page",
+            font = ("Arial", 24, "bold"),
+        )
+        title.pack(pady=20)
+
+        desc = ctk.CTkLabel(
+            home_page,
+            text = "Welcome to Campus Connect! Here you can manage students and explore connections.",
+            font = ("Arial", 16),
+        )
+        desc.pack(pady=10)
+
+        # Button
+        explore_btn = ctk.CTkButton(
+            home_page,
+            text = "Explore Connections",
+            width = 200,
+            height = 40,
+            corner_radius = 10
+        )
+        explore_btn.pack(pady=30)
+
+
+        add_page = ctk.CTkFrame(container)
+        connections_page = ctk.CTkFrame(container)
+        graph_page = ctk.CTkFrame(container)
+        discussions_page = ctk.CTkFrame(container)
+
+
+
+        for page in (home_page, add_page, connections_page, graph_page, discussions_page):
+            page.place(relx=0, rely=0, relwidth=1, relheight=1)
+
+        self.pages = {
+            "home": home_page,
+            "add_student": add_page,
+            "connections": connections_page,
+            "graph": graph_page,
+            "discussion": discussions_page,
+        }
+
+        self.show_page("home")
 
         '''
      # GUI Pages
