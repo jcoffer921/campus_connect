@@ -1,4 +1,4 @@
-# 🎓 Campus Connect
+# Campus Connect
 
 Campus Connect is a Python-based social networking application designed to help college students connect, collaborate, and communicate with peers in similar majors or courses.  
 It combines **Graph** and **Tree** data structures with a modern **CustomTkinter GUI** to simulate campus-wide relationships and discussion threads.
