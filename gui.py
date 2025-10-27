@@ -1,169 +1,159 @@
 # gui.py
-# Builds the graphical interface for Campus Connect
+# Campus Connect GUI (Modern Clean Version)
 
 import customtkinter as ctk
 import tkinter.messagebox as tkmb
 from graph_structure import Graph
+from PIL import Image
 
 
 class CampusConnectApp:
-    ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("blue")
-
     def __init__(self):
         self.root = ctk.CTk()
         self.root.title("Campus Connect")
-        self.root.geometry("1000x600")
-        self.graph = Graph()
-        self.pages = {}
-        self.login()
+        self.root.geometry("1100x700")
 
-    def run(self):
+        ctk.set_appearance_mode("light")
+
+        # Theme colors
+        self.primary = "#0047AB"   # Cobalt blue
+        self.accent = "#2563EB"
+        self.bg_color = "#FFFFFF"
+        self.text_color = "#1E1E1E"
+
+        self.graph = Graph()
+        self.setup_ui()
         self.root.mainloop()
 
-    def show_page(self, page_class):
-        frame = self.pages[page_class]
-        frame.tkraise()
+    # ---------------- MAIN UI ----------------
+    def setup_ui(self):
+        # NAVBAR (horizontal)
+        navbar = ctk.CTkFrame(self.root, height=60, fg_color="black", corner_radius=0)
+        navbar.pack(fill="x")
 
-    def login(self, user_entry=None, user_pass=None):
-        # Create a shadow frame first
-        shadow = ctk.CTkFrame(
-            self.root,
-            width=410,
-            height=310,
-            corner_radius=20,
-            fg_color="#1a1a1a" # dark gray shadow
+        # --- Logo ---
+        logo_image = ctk.CTkImage(
+            dark_image= Image.open("logo.png"),
+            light_image = Image.open("logo.png"),
+            size = (40, 40)
         )
-        shadow.place(relx=0.5, rely=0.5, anchor="center", x=4, y=4)
 
-        # Create main login card
-        login_frame = ctk.CTkFrame(
-            self.root,
-            width=400,
-            height=300,
-            corner_radius=20,
-            fg_color="#2b2b2b" # a lighter gray
-        )
-        login_frame.place(relx=0.5, rely=0.5, anchor="center")
+        logo_label = ctk.CTkLabel(navbar, image=logo_image, text="")
+        logo_label.pack(side="left", padx=(15, 5), pady=10)
 
-        # Add widgets inside the card
-        title_label = ctk.CTkLabel(login_frame, text="Campus Connect Login", font=("Arial", 20, "bold"))
-        title_label.pack(pady=(20, 10))
+        title = ctk.CTkLabel(navbar, text="Campus Connect", font=("Poppins", 22, "bold"), text_color="white")
+        title.pack(side="left", padx=25)
 
-        # Username filed
-        user_entry = ctk.CTkEntry(login_frame, placeholder_text="Username")
-        user_entry.pack(pady=10, ipadx=50)
+        nav_buttons = [
+            ("Home", lambda: self.show_page("home")),
+            ("Add Student", lambda: self.show_page("add")),
+            ("Connections", lambda: self.show_page("connections")),
+            ("Graph", lambda: self.show_page("graph")),
+            ("Discussions", lambda: self.show_page("discussions")),
+        ]
 
-        # Password field
-        user_pass = ctk.CTkEntry(login_frame, placeholder_text="Password")
-        user_pass.pack(pady=10, ipadx=50)
+        for text, command in nav_buttons:
+            btn = ctk.CTkButton(
+                navbar,
+                text=text,
+                command=command,
+                fg_color="transparent",
+                text_color="white",
+                hover_color=self.accent,
+                corner_radius=8,
+                width=100,
+            )
+            btn.pack(side="left", padx=5)
 
-        # Checks if credentials are currect when button is pressed
-        def check_login():
+        # CONTENT AREA
+        self.content = ctk.CTkFrame(self.root, fg_color=self.bg_color)
+        self.content.pack(fill="both", expand=True)
 
-            # Set username
-            username = "Campus"
-
-            # Set password
-            password = ("Connect123")
-
-            if user_entry.get() == username and user_pass.get() == password:
-                tkmb.showinfo(title = "Login Success", message = "You have successfully logged in")
-                login_frame.destroy() # removes login card
-                shadow.destroy() # removes shadow frame
-                self.setup_main_interface() # builds main UI
-            elif user_entry.get() == username and user_pass.get() != password:
-                tkmb.showwarning(title="Wrong Password", message="Please check your password")
-            elif user_entry.get() != username and user_pass.get() == password:
-                tkmb.showwarning(title="Wrong Username", message = "Please checj your username")
-            else:
-                tkmb.showerror(title="Login Failed", message="Please check your username and password")
-
-        login_button = ctk.CTkButton(login_frame, text="Login", command=check_login)
-        login_button.pack(pady=20)
-
-    def setup_main_interface(self):
-        # Navbar setup
-        navbar = ctk.CTkFrame(self.root, height=80)
-        navbar.pack(side="top", fill="x")
-
-        home_btn = ctk.CTkButton(navbar, text="Home", command=lambda: self.show_page("home"))
-        home_btn.pack(side="left", padx=10)
-
-        add_btn = ctk.CTkButton(navbar, text="Add Student", command=lambda: self.show_page("add_student"))
-        add_btn.pack(side="left", padx=10)
-
-        connections_btn = ctk.CTkButton(navbar, text="Connections", command=lambda: self.show_page("connections"))
-        connections_btn.pack(side="left", padx=10)
-
-        graph_btn = ctk.CTkButton(navbar, text="Graph", command=lambda: self.show_page("graph"))
-        graph_btn.pack(side="left", padx=10)
-
-        discussions_btn = ctk.CTkButton(navbar, text="Discussions", command=lambda: self.show_page("discussions"))
-        discussions_btn.pack(side="left", padx=10)
-
-        container = ctk.CTkFrame(self.root)
-        container.pack(fill="both", expand=True)
-
-        # Home Page - Frames
-        home_page = ctk.CTkFrame(container)
-        home_page.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-        title = ctk.CTkLabel(
-            home_page,
-            text = "Home Page",
-            font = ("Arial", 24, "bold"),
-        )
-        title.pack(pady=20)
-
-        desc = ctk.CTkLabel(
-            home_page,
-            text = "Welcome to Campus Connect! Here you can manage students and explore connections.",
-            font = ("Arial", 16),
-        )
-        desc.pack(pady=10)
-
-        # Button
-        explore_btn = ctk.CTkButton(
-            home_page,
-            text = "Explore Connections",
-            width = 200,
-            height = 40,
-            corner_radius = 10
-        )
-        explore_btn.pack(pady=30)
-
-
-        add_page = ctk.CTkFrame(container)
-        connections_page = ctk.CTkFrame(container)
-        graph_page = ctk.CTkFrame(container)
-        discussions_page = ctk.CTkFrame(container)
-
-
-
-        for page in (home_page, add_page, connections_page, graph_page, discussions_page):
-            page.place(relx=0, rely=0, relwidth=1, relheight=1)
-
+        # --- PAGES ---
         self.pages = {
-            "home": home_page,
-            "add_student": add_page,
-            "connections": connections_page,
-            "graph": graph_page,
-            "discussion": discussions_page,
+            "home": self.create_home_page(),
+            "add": self.create_placeholder("Add Student Page"),
+            "connections": self.create_placeholder("Connections Page"),
+            "graph": self.create_placeholder("Graph Page"),
+            "discussions": self.create_placeholder("Discussions Page"),
         }
 
         self.show_page("home")
 
-        '''
-     # GUI Pages
-    #Home
-    def homePage(self):
+    # ---------------- HOME PAGE ----------------
+    def create_home_page(self):
+        page = ctk.CTkFrame(self.content, fg_color=self.bg_color)
 
-    def addStudentPage(self):
+        # --- HERO SECTION ---
+        hero_height = 300
+        hero_frame = ctk.CTkFrame(page, fg_color=self.primary, corner_radius=0, width=1100, height=hero_height)
+        hero_frame.pack(fill="x")
 
-    def connectionsPage(self):
+        hero_title = ctk.CTkLabel(
+            hero_frame,
+            text="Welcome to Campus Connect",
+            font=("Poppins", 32, "bold"),
+            text_color="white"
+        )
+        hero_title.pack(pady=(40, 5))
 
-    def graphsPage(self):
+        hero_subtitle = ctk.CTkLabel(
+            hero_frame,
+            text="Find classmates, form study groups, and grow your network.",
+            font=("Poppins", 16),
+            text_color="white"
+        )
+        hero_subtitle.pack(pady=(0, 20))
 
-    def aboutPage(self):
-'''
+        get_started_btn = ctk.CTkButton(
+            hero_frame,
+            text="Get Started",
+            fg_color="white",
+            text_color=self.primary,
+            hover_color="#E5E7EB",
+            corner_radius=10,
+            width=150
+        )
+        get_started_btn.pack()
+
+        # --- SEARCH SECTION BELOW HERO ---
+        search_section = ctk.CTkFrame(page, fg_color=self.bg_color)
+        search_section.pack(pady=50)
+
+        search_label = ctk.CTkLabel(
+            search_section,
+            text="Search Students or Majors",
+            font=("Poppins", 18, "bold"),
+            text_color=self.text_color
+        )
+        search_label.pack(pady=(0, 10))
+
+        search_bar = ctk.CTkEntry(
+            search_section,
+            placeholder_text="Type a name or major...",
+            width=400,
+            fg_color="#F3F4F6",
+            border_color=self.primary,
+            text_color=self.text_color
+        )
+        search_bar.pack()
+
+        return page
+
+    # ---------------- PLACEHOLDER PAGES ----------------
+    def create_placeholder(self, text):
+        page = ctk.CTkFrame(self.content, fg_color=self.bg_color)
+        ctk.CTkLabel(page, text=text, font=("Poppins", 22), text_color=self.text_color).pack(expand=True)
+        return page
+
+    # ---------------- PAGE CONTROL ----------------
+    def clear_content(self):
+        for widget in self.content.winfo_children():
+            widget.destroy()
+
+    def show_page(self, key):
+        for page in self.pages.values():
+            page.pack_forget()
+        page = self.pages.get(key)
+        if page:
+            page.pack(fill="both", expand=True)
